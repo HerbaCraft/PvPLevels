@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "me.MathiasMC"
-version = "2.2.7"
+version = "3.0.0-SNAPSHOT"
 description = "PvPLevels adds levels to your minecraft server"
 
 repositories {
