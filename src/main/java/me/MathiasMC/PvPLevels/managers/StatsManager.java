@@ -15,20 +15,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class StatsManager {
-
 	private final PvPLevels plugin;
-
-	private LinkedHashMap<String, Long> topKills = new LinkedHashMap<>();
-
-	private LinkedHashMap<String, Long> topDeaths = new LinkedHashMap<>();
-
-	private LinkedHashMap<String, Long> topXp = new LinkedHashMap<>();
-
-	private LinkedHashMap<String, Long> topLevel = new LinkedHashMap<>();
-
-	private LinkedHashMap<String, Long> topKillStreak = new LinkedHashMap<>();
-
-	private LinkedHashMap<String, Long> topKillStreakTop = new LinkedHashMap<>();
+	private LinkedHashMap<UUID, Long> topKills = new LinkedHashMap<>();
+	private LinkedHashMap<UUID, Long> topDeaths = new LinkedHashMap<>();
+	private LinkedHashMap<UUID, Long> topXp = new LinkedHashMap<>();
+	private LinkedHashMap<UUID, Long> topLevel = new LinkedHashMap<>();
+	private LinkedHashMap<UUID, Long> topKillStreak = new LinkedHashMap<>();
+	private LinkedHashMap<UUID, Long> topKillStreakTop = new LinkedHashMap<>();
 
 	public StatsManager(PvPLevels plugin) {
 		this.plugin = plugin;
@@ -150,11 +143,11 @@ public class StatsManager {
 		return !plugin.getFileUtils().config.getStringList("worlds").contains(player.getWorld().getName());
 	}
 
-	private String getTop(int number, boolean key, LinkedHashMap<String, Long> topMap) {
+	private String getTop(int number, boolean key, LinkedHashMap<UUID, Long> topMap) {
 		if (key) {
-			ArrayList<String> map = new ArrayList<>(topMap.keySet());
+			ArrayList<UUID> map = new ArrayList<>(topMap.keySet());
 			if (map.size() > number) {
-				return plugin.getServer().getOfflinePlayer(UUID.fromString(map.get(number))).getName();
+				return plugin.getServer().getOfflinePlayer(map.get(number)).getName();
 			} else {
 				return ChatColor.translateAlternateColorCodes('&', plugin.getFileUtils().config.getString("top.name"));
 			}
@@ -169,16 +162,16 @@ public class StatsManager {
 	}
 
 	public void updateTopMap() {
-		Map<String, Long> unsortedKills = new HashMap<>();
-		Map<String, Long> unsortedDeaths = new HashMap<>();
-		Map<String, Long> unsortedXp = new HashMap<>();
-		Map<String, Long> unsortedLevel = new HashMap<>();
-		Map<String, Long> unsortedKillStreak = new HashMap<>();
-		Map<String, Long> unsortedKillStreakTop = new HashMap<>();
+		Map<UUID, Long> unsortedKills = new HashMap<>();
+		Map<UUID, Long> unsortedDeaths = new HashMap<>();
+		Map<UUID, Long> unsortedXp = new HashMap<>();
+		Map<UUID, Long> unsortedLevel = new HashMap<>();
+		Map<UUID, Long> unsortedKillStreak = new HashMap<>();
+		Map<UUID, Long> unsortedKillStreakTop = new HashMap<>();
 		List<String> excluded = plugin.getFileUtils().config.getStringList("top.excluded");
 		for (OfflinePlayer offlinePlayer : plugin.getServer().getOfflinePlayers()) {
-			String uuid = offlinePlayer.getUniqueId().toString();
-			if (!excluded.contains(uuid)) {
+			UUID uuid = offlinePlayer.getUniqueId();
+			if (!excluded.contains(uuid.toString())) {
 				PlayerConnect playerConnect = plugin.getPlayerConnect(uuid);
 				unsortedKills.put(uuid, playerConnect.getKills());
 				unsortedDeaths.put(uuid, playerConnect.getDeaths());
@@ -197,7 +190,7 @@ public class StatsManager {
 	}
 
 
-	private LinkedHashMap<String, Long> getSortedMap(Map<String, Long> map) {
+	private LinkedHashMap<UUID, Long> getSortedMap(Map<UUID, Long> map) {
 		return map.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
 	}
 

@@ -114,14 +114,13 @@ public class Utils {
 		if (onlyPlaceholderAPI) {
 			return message;
 		}
-		String uuid = offlinePlayer.getUniqueId().toString();
-		PlayerConnect playerConnect = PvPLevels.getInstance().getPlayerConnect(uuid);
+		PlayerConnect playerConnect = PvPLevels.getInstance().getPlayerConnect(offlinePlayer.getUniqueId());
 		if (message.contains("{source}") && offlinePlayer.isOnline()) {
 			message = message.replace("{source}", PvPLevels.getInstance().getXPManager().getSource((Player) offlinePlayer));
 		}
 		return message
 				.replace("{player}", offlinePlayer.getName())
-				.replace("{uuid}", uuid)
+				.replace("{uuid}", offlinePlayer.getUniqueId().toString())
 				.replace("{level_group}", PvPLevels.getInstance().getStatsManager().getGroup(playerConnect))
 				.replace("{level_prefix}", PvPLevels.getInstance().getStatsManager().getPrefix(offlinePlayer, playerConnect))
 				.replace("{level_suffix}", PvPLevels.getInstance().getStatsManager().getSuffix(offlinePlayer, playerConnect))

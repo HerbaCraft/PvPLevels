@@ -7,7 +7,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class PlayerQuit implements Listener {
+import java.util.UUID;
+
+public final class PlayerQuit implements Listener {
 
 	private final PvPLevels plugin;
 
@@ -17,12 +19,16 @@ public class PlayerQuit implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onQuit(PlayerQuitEvent e) {
-		String uuid = e.getPlayer().getUniqueId().toString();
-		if (!plugin.listPlayerConnect().contains(uuid)) return;
+		UUID uuid = e.getPlayer().getUniqueId();
+		if (!plugin.listPlayerConnect().contains(uuid)) {
+			return;
+		}
 		final PlayerConnect playerConnect = plugin.getPlayerConnect(uuid);
 		playerConnect.setTime();
 		playerConnect.save();
-		if (!plugin.getFileUtils().config.getBoolean("multiplier-quit", true)) return;
+		if (!plugin.getFileUtils().config.getBoolean("multiplier-quit", true)) {
+			return;
+		}
 		plugin.multipliers.remove(uuid);
 	}
 }

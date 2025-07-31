@@ -6,9 +6,9 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 public class Purge {
-
 	private final PvPLevels plugin;
 
 	public Purge(final PvPLevels plugin) {
@@ -19,12 +19,12 @@ public class Purge {
 			startInterval = 1;
 		}
 		plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-			for (String uuid : plugin.listPlayerConnect()) {
+			for (UUID uuid : plugin.listPlayerConnect()) {
 				if (isOld(plugin.getPlayerConnect(uuid).getTime())) {
 					plugin.database.delete(uuid);
 					if (plugin.getFileUtils().config.contains("mysql.purge.commands")) {
 						for (String command : plugin.getFileUtils().config.getStringList("mysql.purge.commands")) {
-							plugin.getServer().dispatchCommand(plugin.consoleSender, command.replace("{uuid}", uuid));
+							plugin.getServer().dispatchCommand(plugin.consoleSender, command.replace("{uuid}", uuid.toString()));
 						}
 					}
 				}

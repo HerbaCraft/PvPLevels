@@ -6,8 +6,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-public class BlockPlace implements Listener {
-
+public final class BlockPlace implements Listener {
 	private final PvPLevels plugin;
 
 	public BlockPlace(final PvPLevels plugin) {
@@ -15,10 +14,11 @@ public class BlockPlace implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlace(BlockPlaceEvent e) {
-		final String uuid = e.getPlayer().getUniqueId().toString();
-		if (plugin.getFileUtils().config.contains("xp." + plugin.getPlayerConnect(uuid).getGroup() + "." + e.getBlock().getType().name().toLowerCase())) {
-			plugin.blocksList.add(e.getBlock().getLocation());
+	public void onPlace(BlockPlaceEvent event) {
+		String group = plugin.getPlayerConnect(event.getPlayer().getUniqueId()).getGroup();
+		if (!plugin.getFileUtils().config.contains("xp." + group + "." + event.getBlock().getType().name().toLowerCase())) {
+			return;
 		}
+		plugin.blocksList.add(event.getBlock().getLocation());
 	}
 }

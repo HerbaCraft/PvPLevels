@@ -9,6 +9,8 @@ import me.MathiasMC.PvPLevels.utils.FileUtils;
 import org.bukkit.event.HandlerList;
 
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class PvPLevelsAPI {
 
@@ -28,11 +30,11 @@ public class PvPLevelsAPI {
 	}
 
 	public PlayerConnect getPlayerConnect(final String uuid) {
-		return plugin.getPlayerConnect(uuid);
+		return plugin.getPlayerConnect(UUID.fromString(uuid));
 	}
 
 	public void unloadPlayerConnect(final String uuid) {
-		plugin.unloadPlayerConnect(uuid);
+		plugin.unloadPlayerConnect(UUID.fromString(uuid));
 	}
 
 	public void updatePlayerConnect(final String uuid) {
@@ -41,15 +43,15 @@ public class PvPLevelsAPI {
 	}
 
 	public void removePlayerConnect(final String uuid) {
-		plugin.removePlayerConnect(uuid);
+		plugin.removePlayerConnect(UUID.fromString(uuid));
 	}
 
 	public void deletePlayerConnect(final String uuid) {
-		plugin.database.delete(uuid);
+		plugin.database.delete(UUID.fromString(uuid));
 	}
 
 	public Set<String> listPlayerConnect() {
-		return plugin.listPlayerConnect();
+		return plugin.listPlayerConnect().stream().map(UUID::toString).collect(Collectors.toSet());
 	}
 
 	public FileUtils getFileUtils() {

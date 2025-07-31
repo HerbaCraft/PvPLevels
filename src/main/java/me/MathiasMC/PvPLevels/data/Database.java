@@ -7,6 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 import java.sql.*;
 import java.util.Date;
+import java.util.UUID;
 
 public class Database {
 
@@ -73,7 +74,7 @@ public class Database {
 		}
 	}
 
-	public void insert(String uuid) {
+	public void insert(UUID uuid) {
 		if (set()) {
 			BukkitRunnable r = new BukkitRunnable() {
 				@Override
@@ -84,7 +85,7 @@ public class Database {
 						resultSet = connection.createStatement().executeQuery("SELECT * FROM players WHERE uuid= '" + uuid + "';");
 						if (!resultSet.next()) {
 							preparedStatement = connection.prepareStatement("INSERT INTO players (uuid, `group`, kills, deaths, xp, level, killstreak, killstreak_top, multiplier, lastseen) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-							preparedStatement.setString(1, uuid);
+							preparedStatement.setString(1, uuid.toString());
 							preparedStatement.setString(2, "default");
 							preparedStatement.setLong(3, 0L);
 							preparedStatement.setLong(4, 0L);
@@ -107,7 +108,7 @@ public class Database {
 		}
 	}
 
-	public void delete(String uuid) {
+	public void delete(UUID uuid) {
 		if (set()) {
 			BukkitRunnable r = new BukkitRunnable() {
 				public void run() {
@@ -117,7 +118,7 @@ public class Database {
 						resultSet = connection.createStatement().executeQuery("SELECT * FROM players WHERE uuid= '" + uuid + "';");
 						if (resultSet.next()) {
 							preparedStatement = connection.prepareStatement("DELETE FROM players WHERE uuid = ?");
-							preparedStatement.setString(1, uuid);
+							preparedStatement.setString(1, uuid.toString());
 							preparedStatement.executeUpdate();
 							plugin.removePlayerConnect(uuid);
 						}
@@ -132,7 +133,7 @@ public class Database {
 		}
 	}
 
-	public void setValues(String uuid, String group, long kills, long deaths, long xp, long level, long killstreak, long killstreak_top, String multiplier, Timestamp timestamp) {
+	public void setValues(UUID uuid, String group, long kills, long deaths, long xp, long level, long killstreak, long killstreak_top, String multiplier, Timestamp timestamp) {
 		if (set()) {
 			BukkitRunnable r = new BukkitRunnable() {
 				public void run() {
@@ -151,7 +152,7 @@ public class Database {
 							preparedStatement.setLong(7, killstreak_top);
 							preparedStatement.setString(8, multiplier);
 							preparedStatement.setTimestamp(9, timestamp);
-							preparedStatement.setString(10, uuid);
+							preparedStatement.setString(10, uuid.toString());
 							preparedStatement.executeUpdate();
 						}
 					} catch (SQLException exception) {
@@ -165,7 +166,7 @@ public class Database {
 		}
 	}
 
-	public String[] getValues(String uuid) {
+	public String[] getValues(UUID uuid) {
 		Statement statement = null;
 		ResultSet resultSet = null;
 		try {

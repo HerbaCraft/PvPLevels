@@ -16,6 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class PvPLevels_Command implements CommandExecutor {
@@ -122,7 +123,7 @@ public class PvPLevels_Command implements CommandExecutor {
 					} else if (args[0].equalsIgnoreCase("save")) {
 						unknown = false;
 						if (sender.hasPermission("pvplevels.admin.save")) {
-							for (String uuid : plugin.listPlayerConnect()) {
+							for (UUID uuid : plugin.listPlayerConnect()) {
 								plugin.getPlayerConnect(uuid).save();
 							}
 							if (player != null) {
@@ -247,7 +248,7 @@ public class PvPLevels_Command implements CommandExecutor {
 							if (args.length > 2) {
 								final Player target = plugin.getServer().getPlayer(args[2]);
 								if (target != null) {
-									final PlayerConnect playerConnect = plugin.getPlayerConnect(target.getUniqueId().toString());
+									final PlayerConnect playerConnect = plugin.getPlayerConnect(target.getUniqueId());
 									switch (args[1]) {
 										case "kills":
 											triggerReset(player, target, sender, playerConnect, args[1]);
@@ -311,7 +312,7 @@ public class PvPLevels_Command implements CommandExecutor {
 								final Player target = plugin.getServer().getPlayer(args[1]);
 								if (target != null) {
 									if (Utils.isLong(args[2])) {
-										final PlayerConnect playerConnect = plugin.getPlayerConnect(target.getUniqueId().toString());
+										final PlayerConnect playerConnect = plugin.getPlayerConnect(target.getUniqueId());
 										long set = Long.parseLong(args[2]);
 										boolean plus = true;
 										if (args[2].contains("+")) {
@@ -387,7 +388,7 @@ public class PvPLevels_Command implements CommandExecutor {
 								final Player target = plugin.getServer().getPlayer(args[1]);
 								if (target != null) {
 									if (Utils.isLong(args[2])) {
-										final PlayerConnect playerConnect = plugin.getPlayerConnect(target.getUniqueId().toString());
+										final PlayerConnect playerConnect = plugin.getPlayerConnect(target.getUniqueId());
 										long set = Long.parseLong(args[2]);
 										boolean plus = true;
 										if (args[2].contains("+")) {
@@ -458,7 +459,7 @@ public class PvPLevels_Command implements CommandExecutor {
 								if (target != null) {
 									if (Utils.isDouble(args[2])) {
 										if (Utils.isInt(args[3]) && Integer.parseInt(args[3]) <= 2073600) {
-											final PlayerConnect playerConnect = plugin.getPlayerConnect(target.getUniqueId().toString());
+											final PlayerConnect playerConnect = plugin.getPlayerConnect(target.getUniqueId());
 											final PlayerGetMultiplierEvent playerGetMultiplierEvent = new PlayerGetMultiplierEvent(target, playerConnect, Double.parseDouble(args[2]), Integer.parseInt(args[3]));
 											final List<String> commands = new ArrayList<>();
 											for (String command : getCommands("multiplier.target")) {

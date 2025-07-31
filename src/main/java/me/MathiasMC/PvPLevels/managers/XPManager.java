@@ -26,12 +26,11 @@ public class XPManager {
 	}
 
 	public void entityCheck(Player killer, Entity entity) {
-		String entityUUID = entity.getUniqueId().toString();
 		boolean entityPlayer = false;
 		if (entity instanceof Player player) {
 			entityPlayer = true;
-			PlayerConnect playerConnect = plugin.getPlayerConnect(entityUUID);
-			if (!plugin.getFileUtils().config.getStringList("excluded").contains(entityUUID)) {
+			PlayerConnect playerConnect = plugin.getPlayerConnect(entity.getUniqueId());
+			if (!plugin.getFileUtils().config.getStringList("excluded").contains(entity.getUniqueId().toString())) {
 				loseXP(player, killer, playerConnect);
 				getDeath(player, killer, playerConnect);
 			}
@@ -39,9 +38,8 @@ public class XPManager {
 		if (killer == null) {
 			return;
 		}
-		String killerUUID = killer.getUniqueId().toString();
-		if (plugin.getFileUtils().config.getStringList("excluded").contains(killerUUID)) return;
-		PlayerConnect playerConnect = plugin.getPlayerConnect(killerUUID);
+		if (plugin.getFileUtils().config.getStringList("excluded").contains(killer.getUniqueId().toString())) return;
+		PlayerConnect playerConnect = plugin.getPlayerConnect(killer.getUniqueId());
 		if (entityPlayer) {
 			playerConnect.setXpType(entity.getName());
 			if (plugin.getSessionManager().hasSession(killer, (Player) entity)) return;
@@ -90,15 +88,13 @@ public class XPManager {
 	}
 
 	public void getXP(Player player, Entity entity, Material material) {
-		String uuid = player.getUniqueId().toString();
-		PlayerConnect playerConnect = plugin.getPlayerConnect(uuid);
+		PlayerConnect playerConnect = plugin.getPlayerConnect(player.getUniqueId());
 		String group = playerConnect.getGroup();
 		String entityType;
 		String pathKey;
 		if (entity != null) {
-			String entityUUID = entity.getUniqueId().toString();
-			if (plugin.spawners.contains(entityUUID)) return;
-			if (uuid.equalsIgnoreCase(entityUUID)) return;
+			if (plugin.spawners.contains(entity.getUniqueId())) return;
+			if (player.getUniqueId().equals(entity.getUniqueId())) return;
 			pathKey = entity.getType().toString().toLowerCase();
 			entityType = entity.getName();
 			String get = entityType.toUpperCase().replace(" ", "_");
@@ -273,7 +269,7 @@ public class XPManager {
 		} else if (entityDamageEvent != null) {
 			return entityDamageEvent.getCause().toString().toLowerCase();
 		}
-		if (plugin.getFileUtils().config.contains("xp." + plugin.getPlayerConnect(player.getUniqueId().toString()).getGroup() + ".all")) {
+		if (plugin.getFileUtils().config.contains("xp." + plugin.getPlayerConnect(player.getUniqueId()).getGroup() + ".all")) {
 			return "all";
 		}
 		return "void";

@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SessionManager {
-
 	private final PvPLevels plugin;
 	private final HashMap<String, ArrayList<String>> killsession = new HashMap<>();
 	private final Map<String, String> killsessiontime = new HashMap<>();

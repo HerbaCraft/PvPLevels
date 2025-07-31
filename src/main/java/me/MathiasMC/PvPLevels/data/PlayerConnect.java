@@ -4,10 +4,10 @@ import me.MathiasMC.PvPLevels.PvPLevels;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.UUID;
 
 public class PlayerConnect {
-
-	private final String uuid;
+	private final UUID uuid;
 
 	private String group;
 
@@ -41,7 +41,7 @@ public class PlayerConnect {
 
 	private long xpItem = 0;
 
-	public PlayerConnect(String uuid) {
+	public PlayerConnect(UUID uuid) {
 		this.uuid = uuid;
 		final String[] data = PvPLevels.getInstance().database.getValues(uuid);
 		this.group = data[0];
@@ -58,7 +58,7 @@ public class PlayerConnect {
 		this.time = Timestamp.valueOf(data[8]);
 	}
 
-	public String getUniqueId() {
+	public UUID getUniqueId() {
 		return this.uuid;
 	}
 

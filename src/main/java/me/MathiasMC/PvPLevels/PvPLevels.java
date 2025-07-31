@@ -23,15 +23,14 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class PvPLevels extends JavaPlugin {
-
 	private static PvPLevels call;
 
 	public final ConsoleCommandSender consoleSender = Bukkit.getServer().getConsoleSender();
-	public final HashSet<String> spawners = new HashSet<>();
+	public final HashSet<UUID> spawners = new HashSet<>();
 	public final ArrayList<Location> blocksList = new ArrayList<>();
-	public final Map<String, String> lastDamagers = new HashMap<>();
-	public final HashSet<String> multipliers = new HashSet<>();
-	private final Map<String, PlayerConnect> playerConnect = new HashMap<>();
+	public final Map<UUID, UUID> lastDamagers = new HashMap<>();
+	public final HashSet<UUID> multipliers = new HashSet<>();
+	private final Map<UUID, PlayerConnect> playerConnect = new HashMap<>();
 	public Database database;
 	public String generateGroup = null;
 	public long generateAmount = 0;
@@ -125,16 +124,14 @@ public class PvPLevels extends JavaPlugin {
 			Utils.info("Created by MathiasMC");
 
 			getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
-				Iterator<String> iterator = new ArrayList<>(multipliers).iterator();
-				while (iterator.hasNext()) {
-					String uuid = iterator.next();
+				for (UUID uuid : new ArrayList<>(multipliers)) {
 					PlayerConnect playerConnect = getPlayerConnect(uuid);
 					long left = playerConnect.getMultiplierTimeLeft();
 					if (left > 0) {
 						left--;
 						playerConnect.setMultiplierTimeLeft(left);
 					} else {
-						final PlayerLostMultiplierEvent playerLostMultiplierEvent = new PlayerLostMultiplierEvent(getServer().getOfflinePlayer(UUID.fromString(uuid)), playerConnect, playerConnect.getMultiplier(), playerConnect.getMultiplierTime());
+						final PlayerLostMultiplierEvent playerLostMultiplierEvent = new PlayerLostMultiplierEvent(getServer().getOfflinePlayer(uuid), playerConnect, playerConnect.getMultiplier(), playerConnect.getMultiplierTime());
 						playerLostMultiplierEvent.setCommands(fileUtils.language.getStringList("multiplier.lost"));
 						getServer().getPluginManager().callEvent(playerLostMultiplierEvent);
 						if (!playerLostMultiplierEvent.isCancelled()) {
@@ -215,23 +212,23 @@ public class PvPLevels extends JavaPlugin {
 		return this.playerMove;
 	}
 
-	public void unloadPlayerConnect(String uuid) {
+	public void unloadPlayerConnect(UUID uuid) {
 		PlayerConnect playerConnect = this.playerConnect.remove(uuid);
 		if (playerConnect != null) {
 			playerConnect.save();
 		}
 	}
 
-	public void updatePlayerConnect(String uuid) {
+	public void updatePlayerConnect(UUID uuid) {
 		unloadPlayerConnect(uuid);
 		getPlayerConnect(uuid);
 	}
 
-	public void removePlayerConnect(String uuid) {
+	public void removePlayerConnect(UUID uuid) {
 		playerConnect.remove(uuid);
 	}
 
-	public PlayerConnect getPlayerConnect(String uuid) {
+	public PlayerConnect getPlayerConnect(UUID uuid) {
 		if (playerConnect.containsKey(uuid)) {
 			return playerConnect.get(uuid);
 		}
@@ -240,7 +237,7 @@ public class PvPLevels extends JavaPlugin {
 		return playerConnect;
 	}
 
-	public Set<String> listPlayerConnect() {
+	public Set<UUID> listPlayerConnect() {
 		return playerConnect.keySet();
 	}
 }

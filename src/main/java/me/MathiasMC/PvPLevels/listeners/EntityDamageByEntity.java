@@ -7,8 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-public class EntityDamageByEntity implements Listener {
-
+public final class EntityDamageByEntity implements Listener {
 	private final PvPLevels plugin;
 
 	public EntityDamageByEntity(final PvPLevels plugin) {
@@ -17,9 +16,12 @@ public class EntityDamageByEntity implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onEntity(EntityDamageByEntityEvent e) {
-		if (e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
-			if (!plugin.getStatsManager().canProgress((Player) e.getEntity())) return;
-			plugin.lastDamagers.put(e.getEntity().getUniqueId().toString(), e.getDamager().getUniqueId().toString());
+		if (!(e.getEntity() instanceof Player player) || !(e.getDamager() instanceof Player)) {
+			return;
 		}
+		if (!plugin.getStatsManager().canProgress(player)) {
+			return;
+		}
+		plugin.lastDamagers.put(player.getUniqueId(), e.getDamager().getUniqueId());
 	}
 }

@@ -8,8 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class PlayerJoin implements Listener {
-
+public final class PlayerJoin implements Listener {
 	private final PvPLevels plugin;
 
 	public PlayerJoin(final PvPLevels plugin) {
@@ -17,14 +16,17 @@ public class PlayerJoin implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
-	public void onJoin(PlayerJoinEvent e) {
-		final Player player = e.getPlayer();
-		final String uuid = player.getUniqueId().toString();
-		final PlayerConnect playerConnect = plugin.getPlayerConnect(uuid);
-		if (!plugin.getFileUtils().config.getBoolean("multiplier-quit", true)) return;
-		if (playerConnect.getMultiplier() != 0) {
-			plugin.getXPManager().sendCommands(player, plugin.getFileUtils().language.getStringList("multiplier.join"));
-			plugin.multipliers.add(uuid);
+	public void onJoin(PlayerJoinEvent event) {
+		final Player player = event.getPlayer();
+		if (!plugin.getFileUtils().config.getBoolean("multiplier-quit", true)) {
+			return;
 		}
+
+		final PlayerConnect playerConnect = plugin.getPlayerConnect(player.getUniqueId());
+		if (playerConnect.getMultiplier() == 0) {
+			return;
+		}
+		plugin.getXPManager().sendCommands(player, plugin.getFileUtils().language.getStringList("multiplier.join"));
+		plugin.multipliers.add(player.getUniqueId());
 	}
 }
