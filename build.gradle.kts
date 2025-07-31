@@ -1,5 +1,3 @@
-import java.nio.charset.StandardCharsets
-
 plugins {
 	java
 	id("xyz.jpenilla.resource-factory-bukkit-convention") version "1.3.0"
@@ -26,7 +24,7 @@ java {
 
 tasks {
 	compileJava {
-		options.encoding = StandardCharsets.UTF_8.name()
+		options.encoding = Charsets.UTF_8.name()
 	}
 }
 
