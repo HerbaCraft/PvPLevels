@@ -12,7 +12,6 @@ import me.MathiasMC.PvPLevels.managers.StatsManager;
 import me.MathiasMC.PvPLevels.managers.XPManager;
 import me.MathiasMC.PvPLevels.placeholder.PlaceholderAPI;
 import me.MathiasMC.PvPLevels.utils.FileUtils;
-import me.MathiasMC.PvPLevels.utils.MetricsLite;
 import me.MathiasMC.PvPLevels.utils.UpdateUtils;
 import me.MathiasMC.PvPLevels.utils.Utils;
 import org.bukkit.Bukkit;
@@ -105,7 +104,6 @@ public class PvPLevels extends JavaPlugin {
 			}
 			getCommand("pvplevels").setExecutor(new PvPLevels_Command(this));
 			getCommand("pvplevels").setTabCompleter(new PvPLevels_TabComplete(this));
-			new MetricsLite(this, 1174);
 			if (fileUtils.config.getBoolean("update-check")) {
 				new UpdateUtils(this, 20807).getVersion(version -> {
 					if (this.getDescription().getVersion().equalsIgnoreCase(version)) {
