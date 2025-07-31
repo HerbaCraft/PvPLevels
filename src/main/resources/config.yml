@@ -6,9 +6,6 @@
 #           contact me on spigot          #
 #                                         #
 
-# Check for plugin updates on server startup?
-update-check: true
-
 # Checks for block interactions and awards XP if the block type matches.
 # Note: Block break and place events are disabled.
 # Requires a server restart to apply changes.

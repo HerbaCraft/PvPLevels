@@ -12,7 +12,6 @@ import me.MathiasMC.PvPLevels.managers.StatsManager;
 import me.MathiasMC.PvPLevels.managers.XPManager;
 import me.MathiasMC.PvPLevels.placeholder.PlaceholderAPI;
 import me.MathiasMC.PvPLevels.utils.FileUtils;
-import me.MathiasMC.PvPLevels.utils.UpdateUtils;
 import me.MathiasMC.PvPLevels.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -22,7 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.sql.SQLException;
 import java.util.*;
 
-public class PvPLevels extends JavaPlugin {
+public final class PvPLevels extends JavaPlugin {
 	private static PvPLevels call;
 
 	public final ConsoleCommandSender consoleSender = Bukkit.getServer().getConsoleSender();
@@ -103,15 +102,6 @@ public class PvPLevels extends JavaPlugin {
 			}
 			getCommand("pvplevels").setExecutor(new PvPLevels_Command(this));
 			getCommand("pvplevels").setTabCompleter(new PvPLevels_TabComplete(this));
-			if (fileUtils.config.getBoolean("update-check")) {
-				new UpdateUtils(this, 20807).getVersion(version -> {
-					if (this.getDescription().getVersion().equalsIgnoreCase(version)) {
-						Utils.info("You are using the latest version of PvPLevels (" + getDescription().getVersion() + ")");
-					} else {
-						Utils.warning("Version: " + version + " has been released! you are currently using version: " + getDescription().getVersion());
-					}
-				});
-			}
 			if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
 				new PlaceholderAPI(this).register();
 				Utils.info("PlaceholderAPI (found)");
