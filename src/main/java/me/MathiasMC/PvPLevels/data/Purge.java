@@ -9,30 +9,30 @@ import java.time.temporal.ChronoUnit;
 
 public class Purge {
 
-    private final PvPLevels plugin;
+	private final PvPLevels plugin;
 
-    public Purge(final PvPLevels plugin) {
-        this.plugin = plugin;
-        final long interval = plugin.getFileUtils().config.getInt("mysql.purge.interval");
-        long startInterval = interval;
-        if (plugin.getFileUtils().config.getBoolean("mysql.purge.check-on-startup")) {
-            startInterval = 1;
-        }
-        plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-            for (String uuid : plugin.listPlayerConnect()) {
-                if (isOld(plugin.getPlayerConnect(uuid).getTime())) {
-                    plugin.database.delete(uuid);
-                    if (plugin.getFileUtils().config.contains("mysql.purge.commands")) {
-                        for (String command : plugin.getFileUtils().config.getStringList("mysql.purge.commands")) {
-                            plugin.getServer().dispatchCommand(plugin.consoleSender, command.replace("{uuid}", uuid));
-                        }
-                    }
-                }
-            }
-            }, startInterval * 20, interval * 20);
-    }
+	public Purge(final PvPLevels plugin) {
+		this.plugin = plugin;
+		final long interval = plugin.getFileUtils().config.getInt("mysql.purge.interval");
+		long startInterval = interval;
+		if (plugin.getFileUtils().config.getBoolean("mysql.purge.check-on-startup")) {
+			startInterval = 1;
+		}
+		plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+			for (String uuid : plugin.listPlayerConnect()) {
+				if (isOld(plugin.getPlayerConnect(uuid).getTime())) {
+					plugin.database.delete(uuid);
+					if (plugin.getFileUtils().config.contains("mysql.purge.commands")) {
+						for (String command : plugin.getFileUtils().config.getStringList("mysql.purge.commands")) {
+							plugin.getServer().dispatchCommand(plugin.consoleSender, command.replace("{uuid}", uuid));
+						}
+					}
+				}
+			}
+		}, startInterval * 20, interval * 20);
+	}
 
-    private boolean isOld(Timestamp date) {
-        return ChronoUnit.DAYS.between(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now()) > plugin.getFileUtils().config.getInt("mysql.purge.inactive-days");
-    }
+	private boolean isOld(Timestamp date) {
+		return ChronoUnit.DAYS.between(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now()) > plugin.getFileUtils().config.getInt("mysql.purge.inactive-days");
+	}
 }

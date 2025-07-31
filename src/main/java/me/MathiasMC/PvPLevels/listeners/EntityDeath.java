@@ -12,25 +12,25 @@ import java.util.UUID;
 
 public class EntityDeath implements Listener {
 
-    private final PvPLevels plugin;
+	private final PvPLevels plugin;
 
-    public EntityDeath(final PvPLevels plugin) {
-        this.plugin = plugin;
-    }
+	public EntityDeath(final PvPLevels plugin) {
+		this.plugin = plugin;
+	}
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onEntity(EntityDeathEvent e) {
-        LivingEntity entity = e.getEntity();
-        String uuid = entity.getUniqueId().toString();
-        if (entity.getKiller() != null && !plugin.getStatsManager().canProgress(entity.getKiller())) return;
-        if (plugin.lastDamagers.containsKey(uuid)) {
-            Player target = plugin.getServer().getPlayer(UUID.fromString(plugin.lastDamagers.get(uuid)));
-            if (target != null && target.isOnline()) {
-                plugin.getXPManager().entityCheck(target, e.getEntity());
-            }
-            plugin.lastDamagers.remove(uuid);
-            return;
-        }
-        plugin.getXPManager().entityCheck(entity.getKiller(), entity);
-    }
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onEntity(EntityDeathEvent e) {
+		LivingEntity entity = e.getEntity();
+		String uuid = entity.getUniqueId().toString();
+		if (entity.getKiller() != null && !plugin.getStatsManager().canProgress(entity.getKiller())) return;
+		if (plugin.lastDamagers.containsKey(uuid)) {
+			Player target = plugin.getServer().getPlayer(UUID.fromString(plugin.lastDamagers.get(uuid)));
+			if (target != null && target.isOnline()) {
+				plugin.getXPManager().entityCheck(target, e.getEntity());
+			}
+			plugin.lastDamagers.remove(uuid);
+			return;
+		}
+		plugin.getXPManager().entityCheck(entity.getKiller(), entity);
+	}
 }

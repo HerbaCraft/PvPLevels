@@ -10,87 +10,82 @@ import org.bukkit.event.HandlerList;
 import java.util.List;
 
 public class PlayerKillEvent extends Event implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+	private static final HandlerList handlers = new HandlerList();
 
-    private final PvPLevels plugin;
+	private final PvPLevels plugin;
+	private final Player player;
+	private final Player killed;
+	private final PlayerConnect playerConnect;
+	private boolean cancelled = false;
+	private long kills;
 
-    private boolean cancelled = false;
+	private List<String> commands = null;
 
-    private final Player player;
+	public PlayerKillEvent(final Player player, final Player killed, final PlayerConnect playerConnect, final long kills) {
+		this.plugin = PvPLevels.getInstance();
+		this.player = player;
+		this.killed = killed;
+		this.playerConnect = playerConnect;
+		this.kills = kills;
+	}
 
-    private final Player killed;
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 
-    private final PlayerConnect playerConnect;
+	public Player getPlayer() {
+		return this.player;
+	}
 
-    private long kills;
+	public Player getKilled() {
+		return this.killed;
+	}
 
-    private List<String> commands = null;
+	public PlayerConnect getPlayerConnect() {
+		return this.playerConnect;
+	}
 
-    public PlayerKillEvent(final Player player, final Player killed, final PlayerConnect playerConnect, final long kills) {
-        this.plugin = PvPLevels.getInstance();
-        this.player = player;
-        this.killed = killed;
-        this.playerConnect = playerConnect;
-        this.kills = kills;
-    }
+	public long getKills() {
+		return this.kills;
+	}
 
-    public Player getPlayer() {
-        return this.player;
-    }
+	public void setKills(final long kills) {
+		this.kills = kills;
+	}
 
-    public Player getKilled() {
-        return this.killed;
-    }
+	public List<String> getCommands() {
+		return this.commands;
+	}
 
-    public PlayerConnect getPlayerConnect() {
-        return this.playerConnect;
-    }
+	public void setCommands(final List<String> commands) {
+		this.commands = commands;
+	}
 
-    public long getKills() {
-        return this.kills;
-    }
+	public List<String> getDefaultCommands() {
+		final String path = "kills." + playerConnect.getGroup() + "." + kills;
+		if (plugin.getFileUtils().config.contains(path)) {
+			return plugin.getFileUtils().config.getStringList(path);
+		}
+		return plugin.getFileUtils().config.getStringList("kills." + playerConnect.getGroup() + ".get");
+	}
 
-    public List<String> getCommands() {
-        return this.commands;
-    }
+	public void execute() {
+		playerConnect.setKills(kills);
+		plugin.getXPManager().sendCommands(player, commands);
+	}
 
-    public List<String> getDefaultCommands() {
-        final String path = "kills." + playerConnect.getGroup() + "." + kills;
-        if (plugin.getFileUtils().config.contains(path)) {
-            return plugin.getFileUtils().config.getStringList(path);
-        }
-        return plugin.getFileUtils().config.getStringList("kills." + playerConnect.getGroup() + ".get");
-    }
+	@Override
+	public boolean isCancelled() {
+		return cancelled;
+	}
 
-    public void setKills(final long kills) {
-        this.kills = kills;
-    }
+	@Override
+	public void setCancelled(boolean set) {
+		cancelled = set;
+	}
 
-    public void setCommands(final List<String> commands) {
-        this.commands = commands;
-    }
-
-    public void execute() {
-        playerConnect.setKills(kills);
-        plugin.getXPManager().sendCommands(player, commands);
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean set) {
-        cancelled = set;
-    }
-
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
 }

@@ -5,11 +5,11 @@ import org.bukkit.entity.Player;
 
 public abstract class ActionBarManager {
 
-    public final PvPLevels plugin;
+	public final PvPLevels plugin;
 
-    public ActionBarManager(final PvPLevels plugin) {
-        this.plugin = plugin;
-    }
+	public ActionBarManager(final PvPLevels plugin) {
+		this.plugin = plugin;
+	}
 
-    public abstract void sendMessage(final Player player, final String message);
+	public abstract void sendMessage(final Player player, final String message);
 }

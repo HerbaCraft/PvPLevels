@@ -10,83 +10,79 @@ import org.bukkit.event.HandlerList;
 import java.util.List;
 
 public class PlayerGetMultiplierEvent extends Event implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+	private static final HandlerList handlers = new HandlerList();
 
-    private final PvPLevels plugin;
+	private final PvPLevels plugin;
+	private final Player player;
+	private final PlayerConnect playerConnect;
+	private boolean cancelled = false;
+	private double multiplier;
 
-    private boolean cancelled = false;
+	private long seconds;
 
-    private final Player player;
+	private List<String> commands = null;
 
-    private final PlayerConnect playerConnect;
+	public PlayerGetMultiplierEvent(final Player player, final PlayerConnect playerConnect, final double multiplier, final long seconds) {
+		this.plugin = PvPLevels.getInstance();
+		this.player = player;
+		this.playerConnect = playerConnect;
+		this.multiplier = multiplier;
+		this.seconds = seconds;
+	}
 
-    private double multiplier;
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 
-    private long seconds;
+	public Player getPlayer() {
+		return this.player;
+	}
 
-    private List<String> commands = null;
+	public PlayerConnect getPlayerConnect() {
+		return this.playerConnect;
+	}
 
-    public PlayerGetMultiplierEvent(final Player player, final PlayerConnect playerConnect, final double multiplier, final long seconds) {
-        this.plugin = PvPLevels.getInstance();
-        this.player = player;
-        this.playerConnect = playerConnect;
-        this.multiplier = multiplier;
-        this.seconds = seconds;
-    }
+	public double getMultiplier() {
+		return this.multiplier;
+	}
 
-    public Player getPlayer() {
-        return this.player;
-    }
+	public void setMultiplier(final double multiplier) {
+		this.multiplier = multiplier;
+	}
 
-    public PlayerConnect getPlayerConnect() {
-        return this.playerConnect;
-    }
+	public long getSeconds() {
+		return this.seconds;
+	}
 
-    public double getMultiplier() {
-        return this.multiplier;
-    }
+	public void setSeconds(final long seconds) {
+		this.seconds = seconds;
+	}
 
-    public long getSeconds() {
-        return this.seconds;
-    }
+	public List<String> getCommands() {
+		return this.commands;
+	}
 
-    public List<String> getCommands() {
-        return this.commands;
-    }
+	public void setCommands(final List<String> commands) {
+		this.commands = commands;
+	}
 
-    public void setMultiplier(final double multiplier) {
-        this.multiplier = multiplier;
-    }
+	public void execute() {
+		playerConnect.startMultiplier(multiplier, seconds);
+		plugin.getXPManager().sendCommands(player, commands);
+	}
 
-    public void setSeconds(final long seconds) {
-        this.seconds = seconds;
-    }
+	@Override
+	public boolean isCancelled() {
+		return cancelled;
+	}
 
-    public void setCommands(final List<String> commands) {
-        this.commands = commands;
-    }
+	@Override
+	public void setCancelled(boolean set) {
+		cancelled = set;
+	}
 
-    public void execute() {
-        playerConnect.startMultiplier(multiplier, seconds);
-        plugin.getXPManager().sendCommands(player, commands);
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean set) {
-        cancelled = set;
-    }
-
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
 }

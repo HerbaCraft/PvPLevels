@@ -11,108 +11,103 @@ import org.bukkit.event.HandlerList;
 import java.util.List;
 
 public class PlayerGetXPEvent extends Event implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+	private static final HandlerList handlers = new HandlerList();
 
-    private final PvPLevels plugin;
+	private final PvPLevels plugin;
+	private final Player player;
+	private final Entity entity;
+	private final PlayerConnect playerConnect;
+	private boolean cancelled = false;
+	private long xp;
 
-    private boolean cancelled = false;
+	private String key;
 
-    private final Player player;
+	private List<String> commands = null;
 
-    private final Entity entity;
+	public PlayerGetXPEvent(final Player player, final Entity entity, final PlayerConnect playerConnect, final long xp) {
+		this.plugin = PvPLevels.getInstance();
+		this.player = player;
+		this.entity = entity;
+		this.playerConnect = playerConnect;
+		this.xp = xp;
+	}
 
-    private final PlayerConnect playerConnect;
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 
-    private long xp;
+	public Player getPlayer() {
+		return this.player;
+	}
 
-    private String key;
+	public Entity getEntity() {
+		return this.entity;
+	}
 
-    private List<String> commands = null;
+	public PlayerConnect getPlayerConnect() {
+		return this.playerConnect;
+	}
 
-    public PlayerGetXPEvent(final Player player, final Entity entity, final PlayerConnect playerConnect, final long xp) {
-        this.plugin = PvPLevels.getInstance();
-        this.player = player;
-        this.entity = entity;
-        this.playerConnect = playerConnect;
-        this.xp = xp;
-    }
+	public long getXp() {
+		return this.xp;
+	}
 
-    public Player getPlayer() {
-        return this.player;
-    }
+	public void setXp(final long xp) {
+		this.xp = xp;
+	}
 
-    public Entity getEntity() {
-        return this.entity;
-    }
+	public String getKey() {
+		return this.key;
+	}
 
-    public PlayerConnect getPlayerConnect() {
-        return this.playerConnect;
-    }
+	public void setKey(final String key) {
+		this.key = key;
+	}
 
-    public long getXp() {
-        return this.xp;
-    }
+	public List<String> getCommands() {
+		return this.commands;
+	}
 
-    public String getKey() {
-        return this.key;
-    }
+	public void setCommands(final List<String> commands) {
+		this.commands = commands;
+	}
 
-    public List<String> getCommands() {
-        return this.commands;
-    }
+	public List<String> getDefaultCommands() {
+		final String path = playerConnect.getGroup() + "." + playerConnect.getLevel() + ".override";
+		if (!plugin.getFileUtils().levels.contains(path)) {
+			return plugin.getFileUtils().execute.getStringList(plugin.getFileUtils().levels.getString(playerConnect.getGroup() + ".execute") + ".xp." + key);
+		}
+		return plugin.getFileUtils().execute.getStringList(plugin.getFileUtils().levels.getString(path) + ".xp." + key);
+	}
 
-    public List<String> getDefaultCommands() {
-        final String path = playerConnect.getGroup() + "." + playerConnect.getLevel() + ".override";
-        if (!plugin.getFileUtils().levels.contains(path)) {
-            return plugin.getFileUtils().execute.getStringList(plugin.getFileUtils().levels.getString(playerConnect.getGroup() + ".execute") + ".xp." + key);
-        }
-        return plugin.getFileUtils().execute.getStringList(plugin.getFileUtils().levels.getString(path) + ".xp." + key);
-    }
+	public void execute() {
+		if (!plugin.getXPManager().isMaxLevel(playerConnect)) {
+			playerConnect.setXp(xp);
+		}
+		final boolean getLevel = plugin.getXPManager().getLevel(player, entity, playerConnect);
+		if (!getLevel) {
+			plugin.getXPManager().sendCommands(player, commands);
+		}
+		if (playerConnect.getSave() >= plugin.getFileUtils().config.getInt("mysql.save")) {
+			playerConnect.save();
+			playerConnect.setSave(0);
+			return;
+		}
+		playerConnect.setSave(playerConnect.getSave() + 1);
+	}
 
-    public void setXp(final long xp) {
-        this.xp = xp;
-    }
+	@Override
+	public boolean isCancelled() {
+		return cancelled;
+	}
 
-    public void setKey(final String key) {
-        this.key = key;
-    }
+	@Override
+	public void setCancelled(boolean set) {
+		cancelled = set;
+	}
 
-    public void setCommands(final List<String> commands) {
-        this.commands = commands;
-    }
-
-    public void execute() {
-        if (!plugin.getXPManager().isMaxLevel(playerConnect)) {
-            playerConnect.setXp(xp);
-        }
-        final boolean getLevel = plugin.getXPManager().getLevel(player, entity, playerConnect);
-        if (!getLevel) {
-            plugin.getXPManager().sendCommands(player, commands);
-        }
-        if (playerConnect.getSave() >= plugin.getFileUtils().config.getInt("mysql.save")) {
-            playerConnect.save();
-            playerConnect.setSave(0);
-            return;
-        }
-        playerConnect.setSave(playerConnect.getSave() + 1);
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean set) {
-        cancelled = set;
-    }
-
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
 }

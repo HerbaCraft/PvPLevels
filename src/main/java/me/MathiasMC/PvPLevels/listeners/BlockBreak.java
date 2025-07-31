@@ -12,27 +12,27 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 public class BlockBreak implements Listener {
 
-    private final PvPLevels plugin;
+	private final PvPLevels plugin;
 
-    public BlockBreak(final PvPLevels plugin) {
-        this.plugin = plugin;
-    }
+	public BlockBreak(final PvPLevels plugin) {
+		this.plugin = plugin;
+	}
 
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onBlockBreak(BlockBreakEvent e) {
-        final Location location = e.getBlock().getLocation();
-        final Player player = e.getPlayer();
-        final PlayerConnect playerConnect = plugin.getPlayerConnect(player.getUniqueId().toString());
-        if (!plugin.getXPManager().isMaxLevel(playerConnect)) {
-            final Material material = e.getBlock().getType();
-            plugin.getServer().getScheduler().runTask(plugin, () -> {
-                if (e.getBlock().getLocation().getBlock().getType().equals(Material.AIR)) {
-                    if (!plugin.blocksList.contains(location)) {
-                        plugin.getXPManager().getXP(player, null, material);
-                    }
-                    plugin.blocksList.remove(location);
-                }
-            });
-        }
-    }
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onBlockBreak(BlockBreakEvent e) {
+		final Location location = e.getBlock().getLocation();
+		final Player player = e.getPlayer();
+		final PlayerConnect playerConnect = plugin.getPlayerConnect(player.getUniqueId().toString());
+		if (!plugin.getXPManager().isMaxLevel(playerConnect)) {
+			final Material material = e.getBlock().getType();
+			plugin.getServer().getScheduler().runTask(plugin, () -> {
+				if (e.getBlock().getLocation().getBlock().getType().equals(Material.AIR)) {
+					if (!plugin.blocksList.contains(location)) {
+						plugin.getXPManager().getXP(player, null, material);
+					}
+					plugin.blocksList.remove(location);
+				}
+			});
+		}
+	}
 }

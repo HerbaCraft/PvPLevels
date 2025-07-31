@@ -11,92 +11,87 @@ import org.bukkit.event.HandlerList;
 import java.util.List;
 
 public class PlayerLevelUPEvent extends Event implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+	private static final HandlerList handlers = new HandlerList();
 
-    private final PvPLevels plugin;
+	private final PvPLevels plugin;
+	private final Player player;
+	private final Entity entity;
+	private final PlayerConnect playerConnect;
+	private boolean cancelled = false;
+	private long level;
 
-    private boolean cancelled = false;
+	private List<String> commands = null;
 
-    private final Player player;
+	public PlayerLevelUPEvent(final Player player, final Entity entity, final PlayerConnect playerConnect, final long level) {
+		this.plugin = PvPLevels.getInstance();
+		this.player = player;
+		this.entity = entity;
+		this.playerConnect = playerConnect;
+		this.level = level;
+	}
 
-    private final Entity entity;
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 
-    private final PlayerConnect playerConnect;
+	public Player getPlayer() {
+		return this.player;
+	}
 
-    private long level;
+	public Entity getEntity() {
+		return this.entity;
+	}
 
-    private List<String> commands = null;
+	public PlayerConnect getPlayerConnect() {
+		return this.playerConnect;
+	}
 
-    public PlayerLevelUPEvent(final Player player, final Entity entity, final PlayerConnect playerConnect, final long level) {
-        this.plugin = PvPLevels.getInstance();
-        this.player = player;
-        this.entity = entity;
-        this.playerConnect = playerConnect;
-        this.level = level;
-    }
+	public long getLevel() {
+		return this.level;
+	}
 
-    public Player getPlayer() {
-        return this.player;
-    }
+	public void setLevel(final long level) {
+		this.level = level;
+	}
 
-    public Entity getEntity() {
-        return this.entity;
-    }
+	public List<String> getCommands() {
+		return this.commands;
+	}
 
-    public PlayerConnect getPlayerConnect() {
-        return this.playerConnect;
-    }
+	public void setCommands(final List<String> commands) {
+		this.commands = commands;
+	}
 
-    public long getLevel() {
-        return this.level;
-    }
+	public List<String> getDefaultCommands() {
+		final String path = playerConnect.getGroup() + "." + level + ".override";
+		if (!plugin.getFileUtils().levels.contains(path)) {
+			return plugin.getFileUtils().execute.getStringList(plugin.getFileUtils().levels.getString(playerConnect.getGroup() + "." + level + ".execute") + ".level.up");
+		}
+		return plugin.getFileUtils().execute.getStringList(plugin.getFileUtils().levels.getString(path) + ".level.up");
+	}
 
-    public List<String> getCommands() {
-        return this.commands;
-    }
+	public void setXp() {
+		playerConnect.setXp(plugin.getFileUtils().levels.getLong(playerConnect.getGroup() + "." + level + ".xp"));
+	}
 
-    public List<String> getDefaultCommands() {
-        final String path = playerConnect.getGroup() + "." + level + ".override";
-        if (!plugin.getFileUtils().levels.contains(path)) {
-            return plugin.getFileUtils().execute.getStringList(plugin.getFileUtils().levels.getString(playerConnect.getGroup() + "." + level + ".execute") + ".level.up");
-        }
-        return plugin.getFileUtils().execute.getStringList(plugin.getFileUtils().levels.getString(path) + ".level.up");
-    }
+	public void execute() {
+		plugin.getXPManager().sendCommands(player, commands);
+		playerConnect.setLevel(level);
+		playerConnect.save();
+	}
 
-    public void setLevel(final long level) {
-        this.level = level;
-    }
+	@Override
+	public boolean isCancelled() {
+		return cancelled;
+	}
 
-    public void setCommands(final List<String> commands) {
-        this.commands = commands;
-    }
+	@Override
+	public void setCancelled(boolean set) {
+		cancelled = set;
+	}
 
-    public void setXp() {
-        playerConnect.setXp(plugin.getFileUtils().levels.getLong(playerConnect.getGroup() + "." + level + ".xp"));
-    }
-
-    public void execute() {
-        plugin.getXPManager().sendCommands(player, commands);
-        playerConnect.setLevel(level);
-        playerConnect.save();
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean set) {
-        cancelled = set;
-    }
-
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
 }

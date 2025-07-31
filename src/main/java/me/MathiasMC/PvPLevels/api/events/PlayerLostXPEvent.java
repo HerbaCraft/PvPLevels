@@ -11,93 +11,88 @@ import org.bukkit.event.HandlerList;
 import java.util.List;
 
 public class PlayerLostXPEvent extends Event implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+	private static final HandlerList handlers = new HandlerList();
 
-    private final PvPLevels plugin;
+	private final PvPLevels plugin;
+	private final Player player;
+	private final Entity entity;
+	private final PlayerConnect playerConnect;
+	private boolean cancelled = false;
+	private long xp;
 
-    private boolean cancelled = false;
+	private List<String> commands = null;
 
-    private final Player player;
+	public PlayerLostXPEvent(final Player player, final Entity entity, final PlayerConnect playerConnect, final long xp) {
+		this.plugin = PvPLevels.getInstance();
+		this.player = player;
+		this.entity = entity;
+		this.playerConnect = playerConnect;
+		this.xp = xp;
+	}
 
-    private final Entity entity;
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 
-    private final PlayerConnect playerConnect;
+	public Player getPlayer() {
+		return this.player;
+	}
 
-    private long xp;
+	public Entity getEntity() {
+		return this.entity;
+	}
 
-    private List<String> commands = null;
+	public PlayerConnect getPlayerConnect() {
+		return this.playerConnect;
+	}
 
-    public PlayerLostXPEvent(final Player player, final Entity entity, final PlayerConnect playerConnect, final long xp) {
-        this.plugin = PvPLevels.getInstance();
-        this.player = player;
-        this.entity = entity;
-        this.playerConnect = playerConnect;
-        this.xp = xp;
-    }
+	public long getXp() {
+		return this.xp;
+	}
 
-    public Player getPlayer() {
-        return this.player;
-    }
+	public void setXp(final long xp) {
+		this.xp = xp;
+	}
 
-    public Entity getEntity() {
-        return this.entity;
-    }
+	public List<String> getCommands() {
+		return this.commands;
+	}
 
-    public PlayerConnect getPlayerConnect() {
-        return this.playerConnect;
-    }
+	public void setCommands(final List<String> commands) {
+		this.commands = commands;
+	}
 
-    public long getXp() {
-        return this.xp;
-    }
+	public List<String> getDefaultCommands() {
+		final String path = playerConnect.getGroup() + "." + playerConnect.getLevel() + ".override";
+		if (!plugin.getFileUtils().levels.contains(path)) {
+			return plugin.getFileUtils().execute.getStringList(plugin.getFileUtils().levels.getString(playerConnect.getGroup() + ".execute") + ".xp.lose");
+		}
+		return plugin.getFileUtils().execute.getStringList(plugin.getFileUtils().levels.getString(path) + ".xp.lose");
+	}
 
-    public List<String> getCommands() {
-        return this.commands;
-    }
+	public void execute() {
+		if (xp < 0) {
+			return;
+		}
+		playerConnect.setXp(xp);
+		final boolean loseLevel = plugin.getXPManager().loseLevel(player, entity, playerConnect);
+		if (!loseLevel) {
+			plugin.getXPManager().sendCommands(player, commands);
+		}
+	}
 
-    public List<String> getDefaultCommands() {
-        final String path = playerConnect.getGroup() + "." + playerConnect.getLevel() + ".override";
-        if (!plugin.getFileUtils().levels.contains(path)) {
-            return plugin.getFileUtils().execute.getStringList(plugin.getFileUtils().levels.getString(playerConnect.getGroup() + ".execute") + ".xp.lose");
-        }
-        return plugin.getFileUtils().execute.getStringList(plugin.getFileUtils().levels.getString(path) + ".xp.lose");
-    }
+	@Override
+	public boolean isCancelled() {
+		return cancelled;
+	}
 
-    public void setXp(final long xp) {
-        this.xp = xp;
-    }
+	@Override
+	public void setCancelled(boolean set) {
+		cancelled = set;
+	}
 
-    public void setCommands(final List<String> commands) {
-        this.commands = commands;
-    }
-
-    public void execute() {
-        if (xp < 0) {
-            return;
-        }
-        playerConnect.setXp(xp);
-        final boolean loseLevel = plugin.getXPManager().loseLevel(player, entity, playerConnect);
-        if (!loseLevel) {
-            plugin.getXPManager().sendCommands(player, commands);
-        }
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean set) {
-        cancelled = set;
-    }
-
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
 }
