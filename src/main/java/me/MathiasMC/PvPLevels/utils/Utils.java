@@ -94,21 +94,11 @@ public class Utils {
 	}
 
 	public static ItemStack getHandItemStack(Player player, boolean main) {
-		ItemStack itemStack;
-		try {
-			if (main) {
-				itemStack = player.getInventory().getItemInMainHand();
-			} else {
-				itemStack = player.getInventory().getItemInOffHand();
-			}
-		} catch (NoSuchMethodError error) {
-			itemStack = player.getInventory().getItemInHand();
-		}
-		return itemStack;
+		return main ? player.getInventory().getItemInMainHand() : player.getInventory().getItemInOffHand();
 	}
 
 	public static String replacePlaceholders(OfflinePlayer offlinePlayer, boolean onlyPlaceholderAPI, String message) {
-		if (PvPLevels.getInstance().getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+		if (PvPLevels.getInstance().getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) { //TODO This should be cached on enable
 			message = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(offlinePlayer, message);
 		}
 		if (onlyPlaceholderAPI) {
