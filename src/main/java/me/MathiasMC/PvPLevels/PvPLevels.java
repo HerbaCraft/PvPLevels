@@ -9,7 +9,6 @@ import me.MathiasMC.PvPLevels.listeners.*;
 import me.MathiasMC.PvPLevels.managers.*;
 import me.MathiasMC.PvPLevels.support.PlaceholderAPI;
 import me.MathiasMC.PvPLevels.support.actionbar.ActionBar;
-import me.MathiasMC.PvPLevels.support.actionbar.ActionBar_1_8_R3;
 import me.MathiasMC.PvPLevels.utils.FileUtils;
 import me.MathiasMC.PvPLevels.utils.MetricsLite;
 import me.MathiasMC.PvPLevels.utils.UpdateUtils;
@@ -89,11 +88,7 @@ public class PvPLevels extends JavaPlugin {
         sessionManager = new SessionManager(this);
         statsManager = new StatsManager(this);
         xpManager = new XPManager(this);
-        if (getServer().getVersion().contains("1.8")) {
-            actionBarManager = new ActionBar_1_8_R3(this);
-        } else {
-            actionBarManager = new ActionBar(this);
-        }
+        actionBarManager = new ActionBar(this);
 
         if (database.set()) {
             getServer().getPluginManager().registerEvents(new PlayerLogin(this), this);
