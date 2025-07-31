@@ -4,14 +4,13 @@ import me.MathiasMC.PvPLevels.PvPLevels;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SessionManager {
 	private final PvPLevels plugin;
-	private final HashMap<String, ArrayList<String>> killsession = new HashMap<>();
+	private final HashMap<String, List<String>> killsession = new HashMap<>();
 	private final Map<String, String> killsessiontime = new HashMap<>();
 
 	public SessionManager(PvPLevels plugin) {
@@ -24,7 +23,7 @@ public class SessionManager {
 			boolean check = false;
 			String attacker = killer.getUniqueId().toString();
 			if (!killsession.containsKey(attacker)) {
-				killsession.put(attacker, new ArrayList<>(Collections.singletonList(killed.getUniqueId() + ";1")));
+				killsession.put(attacker, List.of(killed.getUniqueId() + ";1"));
 			} else {
 				for (int i = 0; i < killsession.get(attacker).size(); i++) {
 					if (killed.getUniqueId().toString().equalsIgnoreCase(killsession.get(attacker).get(i).split(";")[0])) {
